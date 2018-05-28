@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include "dns_protocal.h"
-
+#include <sys/socket.h>
 void handle_input(){
 
 }

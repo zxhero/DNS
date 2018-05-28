@@ -1,8 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include <sys/socket.h>
 #include "dns_protocal.h"
 
-void *checking_dns_thread(void *param){
+void *checking_cache_thread(void *param){
     while(1){
 
     }

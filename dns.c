@@ -1,10 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include <sys/socket.h>
 #include "dns_protocal.h"
 #include "dns_db.h"
 
 
-void    init_db(FILE *db_data){
+void    init_db(char *sever_name){
 
 }
 
