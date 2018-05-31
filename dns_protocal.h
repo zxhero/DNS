@@ -145,4 +145,12 @@ void init_rr_section(unsigned char* rr_begin, struct db_entry_t* rr){
     rr_begin += sizeof(unsigned short);
     memcpy(rr_begin,rr->data,rr->length);
 }
+
+char *get_last_field_name(char *name){
+
+}
+
+char *get_prior_field_name(char *name){
+
+}
 #endif // DNS_PROTOCAL

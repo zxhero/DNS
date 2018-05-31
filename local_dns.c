@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include "dns_protocal.h"
 
+const char  cache[] = "cache.txt";
 void *checking_cache_thread(void *param){
     while(1){
 
