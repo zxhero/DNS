@@ -2,6 +2,8 @@
 #define DNS_DB
 #include "list.h"
 #include "dns_protocal.h"
+#include<string.h>
+#include<stdio.h>
 
 struct db_t{
     struct list_head list;
@@ -18,49 +20,64 @@ struct cache_entry_t{
 struct list_head db_head;
 //struct list_head cache_head;
 
-db_entry *find_rr_in_file(unsigned shor type, unsigned char* domain_name){
+db_entry *find_rr_in_file(unsigned shor type, unsigned char* domain_name){   //domain_name is host domain name
     struct db_t *db_file = NULL;
     //int is_exist = 0;
-    unsigned char *host_domain_name = malloc(100);
-    memset(host_domain_name,0,200);
+    //unsigned char *host_domain_name = malloc(100);
+    //memset(host_domain_name,0,200);
+    unsigned int max_field_num = 0;
+    db_entry *rr = malloc(sizeof(db_entry));
+    unsigned int h_type = 0;
+    unsigned char   host_domain_name[100];
+    memset(host_domain_name,0,100);
+
     list_for_each_entry(db_file,&db_head,list){
         fseek(db_file->hd,0,SEEK_SET);
-        unsigned int h_type = 0;
-        while(fscanf("%s %d",host_domain_name,&h_type) != EOF){
-            unsigned char* nptr = domain_name;
-            unsigned char* hptr = host_domain_name;
-            unsigned char bnum = *nptr++;
+        while(fscanf(db_file->hd,"%s %d",host_domain_name,&h_type) != EOF){
+            unsigned int compare_feild_num = 0;
+            unsigned char* name_field = get_last_field_name(domain_name);
+            unsigned char* h_name_field = get_last_field_name(host_domain_name);
+            unsigned char* nptr;
+            unsigned char* hptr;
             int is_wrong = 0;
-            while(*nptr != '\0'){
-                for(int i = 0;i < bnum;i++){
-                    if(*nptr==*hptr && *(nptr+1) == *(hptr+1) && *(nptr+2) == *(hptr+2)){
-                        nptr += 3;
-                        hptr += 3;
-                    }
-                    else{
+            while(name_field != NULL && h_name_field != NULL){
+                nptr = name_field;
+                hptr = h_name_field;
+                while(*nptr != '\0' && *nptr != '.' && *hptr != '\0' && *hptr != '.'){
+                    if(*nptr++ != *hptr++){
                         is_wrong = 1;
                         break;
                     }
                 }
-                if(!is_wrong && *nptr != '\0'){
-                    nptr++;
-                    hptr++;
+                if(!is_wrong){
+                    name_field = get_prior_field_name(name_field,domain_name);
+                    h_name_field = get_prior_field_name(h_name_field,host_domain_name);
+                    compare_feild_num ++;
                 }
                 else    break;
             }
-            if(is_wrong)    fgets()
-            else if(h_type == type){
-                db_entry *rr = malloc(sizeof(db_entry));
-                rr->domain_name = host_domain_name;
+            if(is_wrong)    fgets(host_domain_name,100,db_file->hd);
+            else if(h_type == type && compare_feild_num > max_field_num){
+                if(rr->domain_name != NULL) free(rr->domain_name);
+                unsigned int length = get_domain_name_len(host_domain_name)
+                rr->domain_name = malloc(length);
+                memcpy(rr->domain_name,host_domain_name,length);
                 rr->type = h_type;
-                fscanf("%d %d %d",&rr->_class,&rr->ttl,&rr->length);
+                fscanf(db_file->hd,"%d %d %d",&rr->_class,&rr->ttl,&rr->length);
+                if(rr->data != NULL)    free(rr->data);
                 rr->data = malloc(rr->length + 1);
-                fscanf("%s",rr->data);
-                return rr;
+                fscanf(db_file->hd,"%s",rr->data);
+                max_field_num = compare_feild_num;
             }
-            memset(host_domain_name,0,200);
+            memset(host_domain_name,0,100);
             h_type = 0;
         }
+    }
+
+    if(max_field_num != 0)  return rr;
+    else{
+        free(rr);
+        return NULL;
     }
 }
 
@@ -79,6 +96,7 @@ int insert_rr(struct cache_entry_t* cache_entry, struct list_head *cache_head, c
     fd = fopen(cache_file,"w");
     list_add_tail(&cache_entry->list, cache_head);
     print_cache(fd, cache_head);
+    fclose(fd);
 }
 
 int delete_rr(struct cache_entry_t* cache_entry, struct list_head *cache_head, char *cache_file){
@@ -86,6 +104,28 @@ int delete_rr(struct cache_entry_t* cache_entry, struct list_head *cache_head, c
     fd = fopen(cache_file,"w");
     list_delete_entry(&cache_entry->list);
     print_cache(fd, cache_head);
+    fclose(fd);
+}
+
+unsigned char* ntoh_domain_name(unsigned char* n_domain_name){
+    unsigned int length = 0;
+    unsigned char buff[100], *dest = buff;
+    unsigned char* name = n_domain_name;
+    //unsigned char* name_next = n_domain_name;
+    unsigned char len = 0;
+    while(*name != '\0'){
+        len = *name++;
+        length += len;
+        for(int i = 0;i < len;i++){
+            *dest++ = *name++;
+        }
+        if(*name == '\0')   *dest = '\0';
+        else    *dest++ = *name++;
+        length++;
+    }
+    unsigned char* h_domain_name = malloc(length);
+    memcpy(h_domain_name, buff, length);
+    return h_domain_name;
 }
 
 #endif // DNS_DB

@@ -77,30 +77,35 @@ unsigned int get_domain_name_len(unsigned char *ptr){
     return length + 1;
 }
 
-unsigned char* hton_domain_name(unsigned char* dest, unsigned char* src){
+unsigned char* hton_domain_name( unsigned char* src){
     unsigned char* name_next = src;
+    unsigned char* buff[100], *dest = buff;
+    unsigned int len = 0;
     while(*name_next != '\0'){
         unsigned char length = 0;
         while(*name_next != '.' && *name_next != '\0'){
-            length ++;
+            length +=3;
             name_next +=3;
         }
         //name_next++;
         *dest++ = length;
+        len += (length+1);
         while(src != name_next){
             *dest++ = *src++;
         }
+        len++;
         if(*name_next == '\0'){
-            *dest++ = '\0';
+            *dest = '\0';
             break;
         }
         else{
-            *dest++ = '.';
-            src++;
+            *dest++ = *src++;
             name_next++;
         }
     }
-    return dest;
+    unsigned char* n_domain_name = malloc(len);
+    memcpy(n_domain_name, buff, len);
+    return n_domain_name;
 }
 
 struct dns_query_t* get_ques_section(dns_header *dns){
@@ -146,11 +151,25 @@ void init_rr_section(unsigned char* rr_begin, struct db_entry_t* rr){
     memcpy(rr_begin,rr->data,rr->length);
 }
 
-char *get_last_field_name(char *name){
-
+unsigned char *get_last_field_name(unsigned char *name){
+    unsigned char *name_next = name;
+    while(*name_next != '\0'){
+        while(*name_next != '.' && *name_next != '\0') name_next++;
+        if(*name_next != '\0'){
+            name_next++;
+            name = name_next;
+        }
+    }
+    return name;
 }
 
-char *get_prior_field_name(char *name){
-
+unsigned char *get_prior_field_name(unsigned char *name, unsigned char* name_head){
+    if(name == name_head)   return NULL;
+    unsigned char *name_prior = name - 2;
+    while(*name_prior != '.' && name_prior != name_head){
+        name_prior--;
+    }
+    if(name_prior == name_head) return name_prior;
+    else    return name_prior+1;
 }
 #endif // DNS_PROTOCAL
