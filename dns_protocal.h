@@ -1,6 +1,9 @@
 #ifndef DNS_PROTOCAL
 #define DNS_PROTOCAL
 
+#include <arpa/inet.h>
+#include<string.h>
+
 //QR
 #define QR_query 0x0000
 #define QR_response 0x8000
@@ -73,13 +76,15 @@ unsigned int get_domain_name_len(unsigned char *ptr){
     unsigned int length = 0;
     while(*ptr != '\0'){
         length++;
+        ptr++;
     }
     return length + 1;
 }
 
-unsigned char* hton_domain_name( unsigned char* src){
+int hton_domain_name(unsigned char* buff, unsigned char* src){
     unsigned char* name_next = src;
-    unsigned char* buff[100], *dest = buff;
+   // unsigned char* buff[100], *dest = buff;
+    unsigned char *dest = buff;
     unsigned int len = 0;
     while(*name_next != '\0'){
         unsigned char length = 0;
@@ -103,9 +108,10 @@ unsigned char* hton_domain_name( unsigned char* src){
             name_next++;
         }
     }
-    unsigned char* n_domain_name = malloc(len);
-    memcpy(n_domain_name, buff, len);
-    return n_domain_name;
+    return len;
+    //unsigned char* n_domain_name = malloc(len);
+    //memcpy(n_domain_name, buff, len);
+    //return n_domain_name;
 }
 
 struct dns_query_t* get_ques_section(dns_header *dns){
@@ -120,7 +126,7 @@ struct dns_query_t* get_ques_section(dns_header *dns){
 
 void init_ques_section(dns_header *dns, unsigned char *domain_name, unsigned short type, unsigned short qclass){
     unsigned char* name = (unsigned char*)dns + DNS_HEADER_SIZE;
-    name = hton_domain_name(name,domain_name);
+    name += hton_domain_name(name,domain_name);
     unsigned short * data = (unsigned short *)name;
     *data++ = htons(type);
     *data = htons(qclass);
@@ -139,7 +145,7 @@ struct db_entry_t* get_rr_entry(unsigned char* rr_begin){
 }
 
 void init_rr_section(unsigned char* rr_begin, struct db_entry_t* rr){
-    rr_begin = hton_domain_name(rr_begin,rr->domain_name);
+    rr_begin += hton_domain_name(rr_begin,rr->domain_name);
     *(unsigned short*)rr_begin = htons(rr->type);
     rr_begin += sizeof(unsigned short);
     *(unsigned short*)rr_begin = htons(rr->_class);
