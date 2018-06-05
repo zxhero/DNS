@@ -118,25 +118,6 @@ int delete_rr(struct cache_entry_t* cache_entry, struct list_head *cache_head, c
     return 1;
 }
 
-unsigned char* ntoh_domain_name(unsigned char* n_domain_name){
-    unsigned int length = 0;
-    unsigned char buff[100], *dest = buff;
-    unsigned char* name = n_domain_name;
-    //unsigned char* name_next = n_domain_name;
-    unsigned char len = 0;
-    while(*name != '\0'){
-        len = *name++;
-        length += len;
-        for(int i = 0;i < len;i++){
-            *dest++ = *name++;
-        }
-        if(*name == '\0')   *dest = '\0';
-        else    *dest++ = *name++;
-        length++;
-    }
-    unsigned char* h_domain_name = malloc(length);
-    memcpy(h_domain_name, buff, length);
-    return h_domain_name;
-}
+
 
 #endif // DNS_DB

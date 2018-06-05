@@ -1,8 +1,9 @@
 #include<stdio.h>
 #include "dns_protocal.h"
 #include <sys/socket.h>
+#include <arpa/inet.h>
 
-int socketfd = socket(AF_INET,SOCK_STREAM,0);
+int socketfd;
 
 void handle_input(){
     while(scanf("") != EOF){
@@ -20,6 +21,8 @@ void handle_dns_operate(int qtype, int qclass, char* domain_name){
 
 int main(){
     struct sockaddr_in client;
+
+    socketfd = socket(AF_INET,SOCK_STREAM,0);
 
     client.sin_addr.s_addr = inet_addr("127.1.1.1");
     client.sin_family = AF_INET;

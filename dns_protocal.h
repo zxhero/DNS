@@ -58,6 +58,7 @@ typedef struct db_entry_t{
     unsigned short  length;
     unsigned char*  data;
 }db_entry;
+#define DB_RNTRY_SIZE(db_entry) (10 + get_domain_name_len(db_entry->domain_name) + db_entry->length)
 
 void    init_dns_header(dns_header *dns, unsigned short id, unsigned int error_code_, int is_query, unsigned short ques_count, unsigned short ans_count, unsigned short add_count){
     dns->add_count = htons(add_count);
@@ -114,19 +115,52 @@ int hton_domain_name(unsigned char* buff, unsigned char* src){
     //return n_domain_name;
 }
 
-struct dns_query_t* get_ques_section(dns_header *dns){
-    unsigned char* name = (unsigned char*)dns + DNS_HEADER_SIZE;
+unsigned char* ntoh_domain_name(unsigned char* n_domain_name){
+    unsigned int length = 0;
+    unsigned char buff[100], *dest = buff;
+    unsigned char* name = n_domain_name;
+    //unsigned char* name_next = n_domain_name;
+    unsigned char len = 0;
+    while(*name != '\0'){
+        len = *name++;
+        length += len;
+        for(int i = 0;i < len;i++){
+            *dest++ = *name++;
+        }
+        if(*name == '\0')   *dest = '\0';
+        else    *dest++ = *name++;
+        length++;
+    }
+    unsigned char* h_domain_name = malloc(length);
+    memcpy(h_domain_name, buff, length);
+    return h_domain_name;
+}
+
+void host_rr_to_net(struct db_entry_t *rr){
+    if(rr == NULL)  return;
+    unsigned char buff[1024];
+    memset(buff,0,1024);
+    unsigned int length = hton_domain_name(buff,rr->domain_name);
+    free(rr->domain_name);
+    rr->domain_name = malloc(length);
+    memcpy(rr->domain_name,buff,length);
+}
+
+struct dns_query_t* get_ques_section(unsigned char *dns){
+    unsigned char* name = dns + DNS_HEADER_SIZE;
     unsigned int length = get_domain_name_len(name);
     struct dns_query_t* qsection = malloc(sizeof(struct dns_query_t));
-    qsection->dormain_name = name;
+    qsection->dormain_name = ntoh_domain_name(name);
     qsection->qtype = ntohs(*((unsigned short*)(name+length)));
     qsection->qclass = ntohs(*((unsigned short*)(name+length) + 1));
     return qsection;
 }
 
-void init_ques_section(dns_header *dns, unsigned char *domain_name, unsigned short type, unsigned short qclass){
-    unsigned char* name = (unsigned char*)dns + DNS_HEADER_SIZE;
-    name += hton_domain_name(name,domain_name);
+void init_ques_section(unsigned char* dns, unsigned char *n_domain_name, unsigned int name_length, short type, unsigned short qclass){
+    unsigned char* name = dns + DNS_HEADER_SIZE;
+    //name += hton_domain_name(name,domain_name);
+    memcpy(name,n_domain_name,name_length);
+    name += name_length;
     unsigned short * data = (unsigned short *)name;
     *data++ = htons(type);
     *data = htons(qclass);
@@ -145,7 +179,11 @@ struct db_entry_t* get_rr_entry(unsigned char* rr_begin){
 }
 
 void init_rr_section(unsigned char* rr_begin, struct db_entry_t* rr){
-    rr_begin += hton_domain_name(rr_begin,rr->domain_name);
+    //rr_begin += hton_domain_name(rr_begin,rr->domain_name);
+    //host_rr_to_net(rr);
+    unsigned int length = get_domain_name_len(rr->domain_name);
+    memcpy(rr_begin,rr->domain_name,length);
+    rr_begin += length;
     *(unsigned short*)rr_begin = htons(rr->type);
     rr_begin += sizeof(unsigned short);
     *(unsigned short*)rr_begin = htons(rr->_class);
