@@ -2,6 +2,7 @@
 #define DNS_PROTOCAL
 
 #include <arpa/inet.h>
+#include<stdlib.h>
 #include<string.h>
 
 //QR
@@ -136,10 +137,19 @@ unsigned char* ntoh_domain_name(unsigned char* n_domain_name){
     return h_domain_name;
 }
 
+int compare_domain_name(unsigned char* A, unsigned char* B){
+    while(*A != '\0' && *B != '\0'){
+        if(*A++ == *B++)    continue;
+        else    return 0;
+    }
+    if(*A == *B)    return 1;
+    return 0;
+}
+
 void host_rr_to_net(struct db_entry_t *rr){
     if(rr == NULL)  return;
-    unsigned char buff[1024];
-    memset(buff,0,1024);
+    unsigned char buff[100];
+    memset(buff,0,100);
     unsigned int length = hton_domain_name(buff,rr->domain_name);
     free(rr->domain_name);
     rr->domain_name = malloc(length);
@@ -170,7 +180,7 @@ struct db_entry_t* get_rr_entry(unsigned char* rr_begin){
     unsigned int length = get_domain_name_len(rr_begin);
     struct db_entry_t* rr_entry = malloc(sizeof(struct db_entry_t));
     rr_entry->data = rr_begin + length + 3 * sizeof(unsigned short) + sizeof(unsigned int);
-    rr_entry->domain_name = rr_begin;
+    rr_entry->domain_name = ntoh_domain_name(rr_begin);
     rr_entry->ttl = ntohl(*((unsigned int*)(rr_begin+length + 2 * sizeof(unsigned short))));
     rr_entry->type = ntohs(*((unsigned short*)(rr_begin+length)));
     rr_entry->length = ntohs(*((unsigned short*)(rr_begin+length+ 2 * sizeof(unsigned short) + sizeof(unsigned int))));
