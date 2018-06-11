@@ -73,7 +73,7 @@ db_entry *find_rr_in_file(unsigned short type, unsigned char* domain_name){   //
                 rr->data = malloc(rr->length + 1);
                 fscanf(db_file->hd,"%s",rr->data);
                 max_field_num = compare_feild_num;
-                //printf("%s\n",rr->data);
+                printf("%s\n",rr->data);
             }
             else{
                 fgets(host_domain_name,100,db_file->hd);
@@ -117,7 +117,5 @@ int delete_rr(struct cache_entry_t* cache_entry, struct list_head *cache_head, c
     fclose(fd);
     return 1;
 }
-
-
 
 #endif // DNS_DB

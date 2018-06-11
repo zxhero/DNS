@@ -5,6 +5,8 @@
 #include<stdlib.h>
 #include<string.h>
 
+//locol 127.1.2.1
+//root 127.2.2.1
 //QR
 #define QR_query 0x0000
 #define QR_response 0x8000
@@ -59,7 +61,7 @@ typedef struct db_entry_t{
     unsigned short  length;
     unsigned char*  data;
 }db_entry;
-#define DB_RNTRY_SIZE(db_entry) (10 + get_domain_name_len(db_entry->domain_name) + db_entry->length)
+#define DB_RNTRY_SIZE(db_entry) (10 + get_domain_name_len(db_entry->domain_name) + db_entry->length + 1)
 
 void    init_dns_header(dns_header *dns, unsigned short id, unsigned int error_code_, int is_query, unsigned short ques_count, unsigned short ans_count, unsigned short add_count){
     dns->add_count = htons(add_count);
@@ -202,7 +204,7 @@ void init_rr_section(unsigned char* rr_begin, struct db_entry_t* rr){
     rr_begin += sizeof(unsigned int);
     *(unsigned short*)rr_begin = htons(rr->length);
     rr_begin += sizeof(unsigned short);
-    memcpy(rr_begin,rr->data,rr->length);
+    memcpy(rr_begin,rr->data,rr->length+1);
 }
 
 unsigned char *get_last_field_name(unsigned char *name){

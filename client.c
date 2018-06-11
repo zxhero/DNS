@@ -4,7 +4,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include<unistd.h>
 int socketfd;
 
 unsigned char* send_dns_packet(unsigned char* packet,unsigned int length,unsigned char *domain_name){
@@ -53,6 +53,10 @@ unsigned char* send_dns_packet(unsigned char* packet,unsigned int length,unsigne
         }
         else{
             printf("%s %d %s\n",ans_section->domain_name,ans_section->type,ans_section->data);
+            if(dns_h->add_count != 0)  {
+                struct db_entry_t* add_section = get_rr_entry(reply+2+DNS_HEADER_SIZE+(10 + get_domain_name_len(reply+2+DNS_HEADER_SIZE) + ans_section->length + 1));
+                printf("%s %d %s\n",add_section->domain_name,add_section->type,add_section->data);
+            }
             valid = 1;
         }
     }
@@ -89,6 +93,10 @@ void handle_input(){
     memset(domain_name,0,100);
     memset(type,0,6);
     while(scanf("%s %s",domain_name,type) != EOF){
+        if(domain_name[0] == '0'){
+            close(socketfd);
+            break;
+        }
         printf("1\n");
         printf("Type : %s\n",type);
         if(type[0] == 'M' ){
@@ -114,7 +122,7 @@ int main(){
 
     socketfd = socket(AF_INET,SOCK_STREAM,0);
 
-    client.sin_addr.s_addr = inet_addr("127.1.2.1");
+    client.sin_addr.s_addr = inet_addr("127.3.2.1");
     client.sin_family = AF_INET;
     client.sin_port = htons( 53 );
 
