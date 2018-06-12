@@ -14,7 +14,7 @@ void    init_db(char *sever_name[], int sever_num){
     for(int i = 0; i < sever_num;i++){
         struct db_t *db_file = malloc(sizeof(struct db_t));
         db_file->name = sever_name[i];
-        db_file->hd = fopen(db_file->name,"r");
+        db_file->hd = NULL;
         list_add_tail(&db_file->list, &db_head);
     }
 }
@@ -53,6 +53,7 @@ void    handle_dns_query(unsigned char *packet, int length){
         free(ans_section->domain_name);
         free(ans_section);
     }
+    free(dns_q->dormain_name);
     free(dns_q);
 }
 
@@ -67,7 +68,7 @@ void    handle_packet(unsigned char *packet, int length){
 }
 
 int main(int argc, char *argv[]){
-    init_db(argv+1,argc-1);
+    init_db(argv+2,argc-2);
 
     struct sockaddr_in server, client;
 
@@ -86,7 +87,7 @@ int main(int argc, char *argv[]){
 
     server.sin_family = AF_INET;
     //server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_addr.s_addr = inet_addr("127.5.2.1");
+    server.sin_addr.s_addr = inet_addr(argv[1]);
     server.sin_port = htons(53);
 
     if (bind(socketfd,(struct sockaddr *)&server, sizeof(server)) < 0) {

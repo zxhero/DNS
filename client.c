@@ -56,9 +56,15 @@ unsigned char* send_dns_packet(unsigned char* packet,unsigned int length,unsigne
             if(dns_h->add_count != 0)  {
                 struct db_entry_t* add_section = get_rr_entry(reply+2+DNS_HEADER_SIZE+(10 + get_domain_name_len(reply+2+DNS_HEADER_SIZE) + ans_section->length + 1));
                 printf("%s %d %s\n",add_section->domain_name,add_section->type,add_section->data);
+                free(add_section->data);
+                free(add_section->domain_name);
+                free(add_section);
             }
             valid = 1;
         }
+        free(ans_section->data);
+        free(ans_section->domain_name);
+        free(ans_section);
     }
     return reply;
 }

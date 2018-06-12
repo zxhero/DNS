@@ -28,7 +28,7 @@ void    reply_dns_query(unsigned char *packet, db_entry *ans_section, db_entry *
         *(unsigned short*)rply_packet = rply_length;
         init_dns_header((struct dns_header_t*)((unsigned char *)rply_packet + 2),dns_h->id,error_code,0,0,1,1);
         init_rr_section(rply_packet + 2 + DNS_HEADER_SIZE,ans_section);
-        struct db_entry_t* check = get_rr_entry(rply_packet+2+DNS_HEADER_SIZE);
+        //struct db_entry_t* check = get_rr_entry(rply_packet+2+DNS_HEADER_SIZE);
         //printf("1 domain name: %s data: %s\n",check->domain_name,check->data);
         init_rr_section(rply_packet + 2 + DNS_HEADER_SIZE + DB_RNTRY_SIZE(ans_section),add_section);
         //check = get_rr_entry(rply_packet+2+DNS_HEADER_SIZE);

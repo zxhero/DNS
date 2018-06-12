@@ -5,6 +5,8 @@
 #include<string.h>
 #include<stdio.h>
 
+#define FLUSH_CACHE_TIME    20
+
 struct db_t{
     struct list_head list;
     //unsigned int name_len;
@@ -14,7 +16,8 @@ struct db_t{
 
 struct cache_entry_t{
     struct list_head list;
-    struct db_entry_t rr;
+    struct db_entry_t *rr;
+    unsigned int alive;
 };
 
 struct list_head db_head;
@@ -33,6 +36,7 @@ db_entry *find_rr_in_file(unsigned short type, unsigned char* domain_name){   //
     memset(host_domain_name,0,100);
 
     list_for_each_entry(db_file,&db_head,list){
+        db_file->hd = fopen(db_file->name,"r");
         fseek(db_file->hd,0,SEEK_SET);
         while(fscanf(db_file->hd,"%s %d",host_domain_name,&h_type) != EOF){
             ///printf("%s\n", host_domain_name);
@@ -81,6 +85,7 @@ db_entry *find_rr_in_file(unsigned short type, unsigned char* domain_name){   //
             memset(host_domain_name,0,100);
             h_type = 0;
         }
+        fclose(db_file->hd);
     }
     //printf("max_field_num: %d\n",max_field_num);
     if(max_field_num != 0)  return rr;
@@ -94,8 +99,8 @@ void    print_cache(FILE *fd, struct list_head *cache_head){
     struct cache_entry_t* cache_entry = NULL;
     if(!list_empty(cache_head)){
         list_for_each_entry(cache_entry,cache_head,list){
-            fprintf(fd,"%s %d %d %d %d %s\n",cache_entry->rr.domain_name,cache_entry->rr.type,cache_entry->rr._class,cache_entry->rr.ttl,
-                    cache_entry->rr.length,cache_entry->rr.data);
+            fprintf(fd,"%s %d %d %d %d %s\n",cache_entry->rr->domain_name,cache_entry->rr->type,cache_entry->rr->_class,cache_entry->rr->ttl,
+                    cache_entry->rr->length,cache_entry->rr->data);
         }
     }
 }
@@ -115,6 +120,10 @@ int delete_rr(struct cache_entry_t* cache_entry, struct list_head *cache_head, c
     list_delete_entry(&cache_entry->list);
     print_cache(fd, cache_head);
     fclose(fd);
+    free(cache_entry->rr->data);
+    free(cache_entry->rr->domain_name);
+    free(cache_entry->rr);
+    free(cache_entry);
     return 1;
 }
 

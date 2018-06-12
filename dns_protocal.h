@@ -181,11 +181,12 @@ void init_ques_section(unsigned char* dns, unsigned char *n_domain_name, unsigne
 struct db_entry_t* get_rr_entry(unsigned char* rr_begin){
     unsigned int length = get_domain_name_len(rr_begin);
     struct db_entry_t* rr_entry = malloc(sizeof(struct db_entry_t));
-    rr_entry->data = rr_begin + length + 3 * sizeof(unsigned short) + sizeof(unsigned int);
     rr_entry->domain_name = ntoh_domain_name(rr_begin);
     rr_entry->ttl = ntohl(*((unsigned int*)(rr_begin+length + 2 * sizeof(unsigned short))));
     rr_entry->type = ntohs(*((unsigned short*)(rr_begin+length)));
     rr_entry->length = ntohs(*((unsigned short*)(rr_begin+length+ 2 * sizeof(unsigned short) + sizeof(unsigned int))));
+    rr_entry->data = malloc(rr_entry->length + 1);
+    memcpy(rr_entry->data,(unsigned char*)rr_begin + length + 3 * sizeof(unsigned short) + sizeof(unsigned int),rr_entry->length+1);
     rr_entry->_class = ntohs(*((unsigned short*)(rr_begin+length) + 1));
     return rr_entry;
 }
