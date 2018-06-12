@@ -9,7 +9,7 @@
 	5.	数据文档编写方式：<br> <br>
 		域名 类型 集合 保存时间 数据长度 数据<br> <br>
 		例如：	主页.北邮.教育.中国 1 1 20 12 192.168.1.25<br> <br>
-	6.	关于集合和类型的定义详见dns_protocal.h
+	6.	关于集合和类型的定义详见dns_protocal.h<br> <br>
 	![image](https://github.com/zxhero/DNS/blob/master/definition.PNG)<br> <br> <br>
 	7.	cache的刷新时间为20sec<br> <br>
 	8.	关于cache中的内容详见cache.txt
