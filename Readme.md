@@ -1,18 +1,18 @@
-# DNS´ó×÷Òµ£¨±±ÓÊ£©
-## Ö§³ÖÖÐÎÄ×Ö·ûµÄ²éÑ¯£¬²ÉÓÃµü´ú²éÑ¯
-²âÊÔËµÃ÷£º<br>
-	1.	makeÃüÁî½øÐÐ±àÒë<br><br>
-	2.	ÔËÐÐdnsÊ±£¬argv[1] = IPµØÖ·£¬argv[>1] = Êý¾ÝÎÄµµÃû £¨×¢Òâ£ºÐèÒªÒ»¸öIPµØÖ·Îª127.5.2.1£¬×÷Îªroot½Úµã£©<br> <br>
-	![image]
-	3.	ÔËÐÐlocal_dnsÊ±£¬²»ÐèÒª²ÎÊý<br> <br>
-	4.	ÔËÐÐclientÊ±£¬²»ÐèÒª²ÎÊý<br> <br>
-	5.	Êý¾ÝÎÄµµ±àÐ´·½Ê½£º<br> <br>
-		ÓòÃû ÀàÐÍ ¼¯ºÏ ±£´æÊ±¼ä Êý¾Ý³¤¶È Êý¾Ý<br> <br>
-		ÀýÈç£º	Ö÷Ò³.±±ÓÊ.½ÌÓý.ÖÐ¹ú 1 1 20 12 192.168.1.25<br> <br>
-	6.	¹ØÓÚ¼¯ºÏºÍÀàÐÍµÄ¶¨ÒåÏê¼ûdns_protocal.h
-	![image]
-	7.	cacheµÄË¢ÐÂÊ±¼äÎª20sec<br> <br>
-	8.	¹ØÓÚcacheÖÐµÄÄÚÈÝÏê¼ûcache.txt
-	9.	clientµÄÊäÈë¸ñÊ½£º£¨µ±ÊäÈë 0 0 Ê±£¬³ÌÐòÍ£Ö¹ÔËÐÐ£©<br> <br>
-		ÓòÃû ÀàÐÍ<br> <br>
-		ÀýÈç£º	Ö÷Ò³.±±ÓÊ.½ÌÓý.ÖÐ¹ú A<br> <br>
+# DNSå¤§ä½œä¸šï¼ˆåŒ—é‚®ï¼‰
+## æ”¯æŒä¸­æ–‡å­—ç¬¦çš„æŸ¥è¯¢ï¼Œé‡‡ç”¨è¿­ä»£æŸ¥è¯¢
+æµ‹è¯•è¯´æ˜Žï¼š<br>
+	1.	makeå‘½ä»¤è¿›è¡Œç¼–è¯‘<br><br>
+	2.	è¿è¡Œdnsæ—¶ï¼Œargv[1] = IPåœ°å€ï¼Œargv[>1] = æ•°æ®æ–‡æ¡£å ï¼ˆæ³¨æ„ï¼šéœ€è¦ä¸€ä¸ªIPåœ°å€ä¸º127.5.2.1ï¼Œä½œä¸ºrootèŠ‚ç‚¹ï¼‰<br> <br>
+	![image](https://github.com/zxhero/DNS/blob/master/example.PNG)<br> <br> <br>
+	3.	è¿è¡Œlocal_dnsæ—¶ï¼Œä¸éœ€è¦å‚æ•°<br> <br>
+	4.	è¿è¡Œclientæ—¶ï¼Œä¸éœ€è¦å‚æ•°<br> <br>
+	5.	æ•°æ®æ–‡æ¡£ç¼–å†™æ–¹å¼ï¼š<br> <br>
+		åŸŸå ç±»åž‹ é›†åˆ ä¿å­˜æ—¶é—´ æ•°æ®é•¿åº¦ æ•°æ®<br> <br>
+		ä¾‹å¦‚ï¼š	ä¸»é¡µ.åŒ—é‚®.æ•™è‚².ä¸­å›½ 1 1 20 12 192.168.1.25<br> <br>
+	6.	å…³äºŽé›†åˆå’Œç±»åž‹çš„å®šä¹‰è¯¦è§dns_protocal.h
+	![image](https://github.com/zxhero/DNS/blob/master/definition.PNG)<br> <br> <br>
+	7.	cacheçš„åˆ·æ–°æ—¶é—´ä¸º20sec<br> <br>
+	8.	å…³äºŽcacheä¸­çš„å†…å®¹è¯¦è§cache.txt
+	9.	clientçš„è¾“å…¥æ ¼å¼ï¼šï¼ˆå½“è¾“å…¥ 0 0 æ—¶ï¼Œç¨‹åºåœæ­¢è¿è¡Œï¼‰<br> <br>
+		åŸŸå ç±»åž‹<br> <br>
+		ä¾‹å¦‚ï¼š	ä¸»é¡µ.åŒ—é‚®.æ•™è‚².ä¸­å›½ A<br> <br>
