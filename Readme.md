@@ -12,7 +12,7 @@
 	6.	关于集合和类型的定义详见dns_protocal.h<br> <br>
 	![image](https://github.com/zxhero/DNS/blob/master/definition.PNG)<br> <br> <br>
 	7.	cache的刷新时间为20sec<br> <br>
-	8.	关于cache中的内容详见cache.txt
+	8.	关于cache中的内容详见cache.txt<br> <br>
 	9.	client的输入格式：（当输入 0 0 时，程序停止运行）<br> <br>
 		域名 类型<br> <br>
 		例如：	主页.北邮.教育.中国 A<br> <br>
