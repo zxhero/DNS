@@ -10,19 +10,19 @@ int socketfd;
 unsigned char* send_dns_packet(unsigned char* packet,unsigned int length,unsigned char *domain_name){
     unsigned char* reply = malloc(512);
 
-    int valid = 0;
+    //int valid = 0;
     int send_socket = socketfd;
     struct sockaddr_in remote_dns;
     remote_dns.sin_family = AF_INET;
     remote_dns.sin_port = htons( 53 );
-    while(valid == 0){
+    //while(valid == 0){
         if (send(send_socket, packet, length, 0) < 0) {
             printf("Send failed");
            // return 1;
         }
         memset(reply,0,512);
         unsigned int reply_len = recv(send_socket, reply, 512, 0);
-        printf("length: %d\n",reply_len);
+        //printf("length: %d\n",reply_len);
         if (reply_len < 0) {
             perror("recv failed");
            // return -1;
@@ -37,8 +37,8 @@ unsigned char* send_dns_packet(unsigned char* packet,unsigned int length,unsigne
             return NULL;
         }
         struct db_entry_t* ans_section = get_rr_entry(reply+2+DNS_HEADER_SIZE);
-        printf("domain name: %s data: %s\n",ans_section->domain_name,ans_section->data);
-        printf("domain name: %s\n",domain_name);
+        //printf("domain name: %s data: %s\n",ans_section->domain_name,ans_section->data);
+        //printf("domain name: %s\n",domain_name);
         if(compare_domain_name(domain_name,ans_section->domain_name) != 1){
             printf("wrong!\n");
             send_socket = socket(AF_INET,SOCK_STREAM,0);
@@ -60,12 +60,12 @@ unsigned char* send_dns_packet(unsigned char* packet,unsigned int length,unsigne
                 free(add_section->domain_name);
                 free(add_section);
             }
-            valid = 1;
+            //valid = 1;
         }
         free(ans_section->data);
         free(ans_section->domain_name);
         free(ans_section);
-    }
+    //}
     return reply;
 }
 
@@ -85,7 +85,7 @@ void handle_dns_operate(int qtype, int qclass, char* domain_name){
     *(unsigned short *)packet = packet_len;
     init_dns_header((dns_header*)(packet+2),1,0,1,1,0,0);
     init_ques_section((unsigned char *)packet+2,dns_q.dormain_name,length,dns_q.qtype,dns_q.qclass);
-    printf("domain name: %s\n",domain_name);
+    //printf("domain name: %s\n",domain_name);
     unsigned char* reply = send_dns_packet(packet,packet_len, domain_name);
     free(packet);
     free(reply);
@@ -103,8 +103,8 @@ void handle_input(){
             close(socketfd);
             break;
         }
-        printf("1\n");
-        printf("Type : %s\n",type);
+        //printf("1\n");
+        //printf("Type : %s\n",type);
         if(type[0] == 'M' ){
             handle_dns_operate(MX_, IN_, domain_name);
         }
@@ -115,6 +115,7 @@ void handle_input(){
             handle_dns_operate(CNAME_, IN_, domain_name);
         }
         else{
+            printf("Wrong Type : %s\n",type);
           //  return 1;
         }
         memset(domain_name,0,100);

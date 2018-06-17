@@ -67,12 +67,15 @@ void    init_dns_header(dns_header *dns, unsigned short id, unsigned int error_c
     dns->add_count = htons(add_count);
     dns->ans_count = htons(ans_count);
     dns->ques_count = htons(ques_count);
+    dns->auth_count = 0;
     dns->id = htons(id);
     if(is_query){
+        //dns->tag = htons(QR_query);
         dns->tag = htons(QR_query);
     }
     else{
-        dns->tag = htons(QR_response | error_code_);
+        //dns->tag = htons(dns->tag =);
+        dns->tag = htons(QR_response | error_code_ | Auth_Server);
     }
 }
 
@@ -102,13 +105,15 @@ int hton_domain_name(unsigned char* buff, unsigned char* src){
         while(src != name_next){
             *dest++ = *src++;
         }
-        len++;
+        //len++;
         if(*name_next == '\0'){
+            len++;
             *dest = '\0';
             break;
         }
         else{
-            *dest++ = *src++;
+            //*dest++ = *src++;
+            src++;
             name_next++;
         }
     }
@@ -131,7 +136,8 @@ unsigned char* ntoh_domain_name(unsigned char* n_domain_name){
             *dest++ = *name++;
         }
         if(*name == '\0')   *dest = '\0';
-        else    *dest++ = *name++;
+        //else    *dest++ = *name++;
+        else    *dest++ = '.';
         length++;
     }
     unsigned char* h_domain_name = malloc(length);

@@ -5,7 +5,7 @@ CC = gcc
 LD = gcc
 
 #CFLAGS = -g -Wall -Iinclude
-CFLAGS =
+CFLAGS += -std=gnu9x
 LDFLAGS = 
 
 LIBS = -lpthread
